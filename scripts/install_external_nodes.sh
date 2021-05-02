@@ -16,6 +16,7 @@ TMP_SRC=$TMP_ROOT/src
 # Fill this structure to add other external nodes
 declare -A external_nodes
 external_nodes=(
+  ["teraranger_array"]="https://github.com/Terabee/teraranger_array.git"
 	["teraranger"]="https://github.com/Terabee/teraranger"
 	["processing_lidar_objects"]="https://github.com/utcoupe/obstacle_detector.git"
 )
