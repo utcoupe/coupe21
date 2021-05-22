@@ -1,0 +1,9 @@
+name: Test catkin_make compilation for ros_ws
+on: [push]
+
+jobs:
+  run-catkin-make:
+    runs-on: ubuntu-latest
+    steps:
+        - run: docker pull utcoupe/coupe21:utcoupe-ros-melodic-amd64
+        - run: scripts/run_travis_build.sh
