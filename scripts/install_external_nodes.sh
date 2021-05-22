@@ -2,6 +2,7 @@
 
 # The goal of this script is to compile and install external ROS nodes used by the UTCoupe nodes. This avoids to compile the external nodes each time the UTCoupe workspace is recompiled.
 
+set -e
 
 if [ "$(lsb_release -sc)" = "xenial" ] || [ "$(lsb_release -sc)" = "willy" ]; then
 	ROS_VER="kinetic"
