@@ -6,4 +6,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - run: docker pull utcoupe/coupe21:utcoupe-ros-melodic-amd64
-        - run: scripts/run_travis_build.sh
+        - run: ./scripts/run_travis_build.sh
