@@ -2,6 +2,7 @@
 
 # The goal of this script is to compile and install external ROS nodes used by the UTCoupe nodes. This avoids to compile the external nodes each time the UTCoupe workspace is recompiled.
 
+set -e
 
 if [ "$(lsb_release -sc)" = "xenial" ] || [ "$(lsb_release -sc)" = "willy" ]; then
 	ROS_VER="kinetic"
@@ -16,6 +17,7 @@ TMP_SRC=$TMP_ROOT/src
 # Fill this structure to add other external nodes
 declare -A external_nodes
 external_nodes=(
+  ["teraranger_array"]="https://github.com/Terabee/teraranger_array.git"
 	["teraranger"]="https://github.com/Terabee/teraranger"
 	["teraranger_array"]="https://github.com/Terabee/teraranger_array"
 	["processing_lidar_objects"]="https://github.com/utcoupe/obstacle_detector.git"
