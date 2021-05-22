@@ -13,7 +13,7 @@ echo "--> final command : $COMPILE_COMMAND"
 
 docker run \
     -i \
-    --mount type=bind,source="$(pwd)"/ros_ws/src,target=/utcoupe/coupe20/ros_ws/src \
-    --mount type=bind,source="$(pwd)"/libs,target=/utcoupe/coupe20/libs,readonly \
-    utcoupe/coupe20:utcoupe-ros-kinetic-amd64 \
+    --mount type=bind,source="$(pwd)"/ros_ws/src,target=/utcoupe/coupe21/ros_ws/src \
+    --mount type=bind,source="$(pwd)"/libs,target=/utcoupe/coupe21/libs,readonly \
+    utcoupe/coupe21:utcoupe-ros-kinetic-amd64 \
     /bin/bash -c "$COMPILE_COMMAND"
