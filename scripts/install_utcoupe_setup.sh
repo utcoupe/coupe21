@@ -121,7 +121,7 @@ function env_setup() {
 function install_ros_workspace() {
 	# Install the UTCoupe ROS specific packages
 	#TODO use the requirements system
-	pip install pyserial numpy scipy pymongo pyclipper pillow
+	pip install pyserial numpy scipy pymongo pillow #pyclipper
 	printf "Download, compile and install all ROS external nodes needed by UTCoupe, this may take a while."
 	./scripts/install_external_nodes.sh
 }
