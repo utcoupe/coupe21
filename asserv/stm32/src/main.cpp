@@ -162,10 +162,10 @@ int main()
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+  // /* USER CODE BEGIN WHILE */
   init_encoders();
-  g_right_pwm.set_timer_freq(32000);
-  g_left_pwm.set_timer_freq(32000);
+  // g_right_pwm.set_timer_freq(32000);
+	// g_left_pwm.set_timer_freq(32000);
 
 //  uint32_t before = HAL_GetTick();
   asservLoopTimer.Start();
@@ -477,10 +477,10 @@ static void MX_GPIO_Init()
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, TEST_LED_Pin|MOT_R_DIR_Pin|MOT_L_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, TEST_LED_Pin|MOT_R_EN_Pin|MOT_L_EN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : TEST_LED_Pin MOT_R_DIR_Pin MOT_L_DIR_Pin */
-  GPIO_InitStruct.Pin = TEST_LED_Pin|MOT_R_DIR_Pin|MOT_L_DIR_Pin;
+  /*Configure GPIO pins : TEST_LED_Pin MOT_R_EN_Pin MOT_L_EN_Pin */
+  GPIO_InitStruct.Pin = TEST_LED_Pin|MOT_R_EN_Pin|MOT_L_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

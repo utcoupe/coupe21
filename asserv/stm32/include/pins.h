@@ -35,6 +35,10 @@
 #define MOT_L_DIR_Pin GPIO_PIN_1
 #define MOT_L_DIR_GPIO_Port GPIOB
 
+// Left motor, brake pin: PB_6
+#define MOT_L_BRAKE_Pin GPIO_PIN_6
+#define MOT_L_BRAKE_GPIO_Port GPIOB
+
 // Right motor, PWM control: PA_7 (A7)
 #define MOT_R_EN_Pin GPIO_PIN_7
 #define MOT_R_EN_GPIO_Port GPIOA
@@ -42,6 +46,10 @@
 // Right motor, direction of rotation: PB_7 (D4)
 #define MOT_R_DIR_Pin GPIO_PIN_7
 #define MOT_R_DIR_GPIO_Port GPIOB
+
+// Right motor, brake pin: PB_5
+#define MOT_R_BRAKE_Pin GPIO_PIN_5
+#define MOT_R_BRAKE_GPIO_Port GPIOB
 
 // ******************* OTHERS *******************
 

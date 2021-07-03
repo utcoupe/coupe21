@@ -14,7 +14,7 @@ see datasheet of DEC-MODULE-24/2
 #include "motor.h"
 #include "pwm.h"
 
-const uint8_t NO_PWM = 0;
+const uint8_t NO_PWM = 127;
 extern Pwm g_right_pwm;
 extern Pwm g_left_pwm;
 //Controleur :
@@ -33,30 +33,32 @@ void setPWM(int motor_side, int pwm) {
 	if (pwm != last_pwm) {
 	    // Brushless status must change
         last_pwm = pwm;
+		
+		// From -255-255 to 0-255
+		pwm = NO_PWM + pwm / 2.0;
 
-        // Hight => forward, LOW => backward
-        auto pin_status = (pwm > 0 ? HIGH : LOW);
         if (motor_side == MOTOR_LEFT) {
-            g_left_pwm.set_duty_cycle(pwm >= 0 ? pwm : -pwm);
-            HAL_GPIO_WritePin(MOT_L_DIR_GPIO_Port, MOT_L_DIR_Pin, pin_status);
+			g_left_pwm.set_duty_cycle(pwm);
         } else {
-            g_right_pwm.set_duty_cycle(pwm >= 0 ? pwm : -pwm);
-            HAL_GPIO_WritePin(MOT_R_DIR_GPIO_Port, MOT_R_DIR_Pin, pin_status);
+			g_right_pwm.set_duty_cycle(pwm);
         }
     }
 }
 
 void motorsInit(void) {
 	//TODO: gérer les pins de brake
-	//HAL_GPIO_WritePin()
+	HAL_GPIO_WritePin(MOT_L_BRAKE_GPIO_Port,MOT_L_BRAKE_Pin,HIGH);
+	HAL_GPIO_WritePin(MOT_R_BRAKE_GPIO_Port,MOT_R_BRAKE_Pin,HIGH);
 
 	//TODO: avoir un PWM externe
+	g_right_pwm.set_timer_freq(32000);
+	g_left_pwm.set_timer_freq(32000);
 	g_right_pwm.set_duty_cycle(NO_PWM);
 	g_left_pwm.set_duty_cycle(NO_PWM);
 
 	// SPD is the new DIR
-	HAL_GPIO_WritePin(MOT_L_DIR_GPIO_Port,MOT_L_DIR_Pin,LOW);
-	HAL_GPIO_WritePin(MOT_R_DIR_GPIO_Port,MOT_R_DIR_Pin,LOW);
+	HAL_GPIO_WritePin(MOT_L_DIR_GPIO_Port,MOT_L_DIR_Pin,HIGH);
+	HAL_GPIO_WritePin(MOT_R_DIR_GPIO_Port,MOT_R_DIR_Pin,HIGH);
 }
 
 void setPWMLeft(int pwm){
