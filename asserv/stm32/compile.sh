@@ -18,7 +18,7 @@ function compile_program() {
 		red_echo "Not in the right place for build..."
 		return
 	fi
-	make && make "${PROJECT_NAME}.hex"
+	make && make "${PROJECT_NAME}_asserv.hex"
 }
 
 # function generate_control_lib_for_simu() {
@@ -42,7 +42,7 @@ function compile_program() {
 # }
 
 function upload_program() {
-    st-flash --format ihex write "${PROJECT_NAME}.hex"
+    st-flash --format ihex write "${PROJECT_NAME}_asserv.hex"
 }
 
 pushd .
