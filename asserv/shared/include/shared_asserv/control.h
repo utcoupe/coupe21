@@ -33,8 +33,8 @@
 #include "shared_asserv/PID.h"
 #include "shared_asserv/goals.h"
 
-#define BACKWARD 0
-#define FORWARD 1
+#define BACKWARD 1
+#define FORWARD 0
 #define ANY 2
 
 #define ANG_REACHED (0x1)
