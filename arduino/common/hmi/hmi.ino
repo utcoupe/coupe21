@@ -6,22 +6,25 @@ Author: Pierre LACLAU, December 2017, UTCoupe.
 
 #include "pins.h"
 
+#define ESP_SERIAL
+
 // Including rosserial
 #include <ros.h>
-#include <drivers_ard_hmi/SetStrategies.h>  // ROS sets strategy names for displaying on hmi.
-#include <drivers_ard_hmi/SetTeams.h>       // ROS sets teams names for displaying on hmi.
-#include <drivers_ard_hmi/HMIEvent.h>       // HMI sends events : JACK, GAME_STOP
-#include <drivers_ard_hmi/ROSEvent.h>       // ROS sends events : ASK_JACK, GAME_STOP
-#include <ai_game_manager/GameStatus.h>      // ROS sends game and init status (to  determine when RPi ready).
-#include <ai_game_manager/GameTime.h>              // ROS sends the timer status (for the ingame progress bar).
-#include <ai_scheduler/AIScore.h>           // ROS sends the timer status (for the ingame progress bar).
+#include <std_msgs/String.h>
+#include <ard_hmi/SetStrategies.h>  // ROS sets strategy names for displaying on hmi.
+#include <ard_hmi/SetTeams.h>       // ROS sets teams names for displaying on hmi.
+#include <ard_hmi/HMIEvent.h>       // HMI sends events : JACK, GAME_STOP
+#include <ard_hmi/ROSEvent.h>       // ROS sends events : ASK_JACK, GAME_STOP
+#include <game_manager/GameStatus.h>      // ROS sends game and init status (to  determine when RPi ready).
+#include <game_manager/GameTime.h>              // ROS sends the timer status (for the ingame progress bar).
+#include <scheduler/AIScore.h>           // ROS sends the timer status (for the ingame progress bar).
 ros::NodeHandle nh;
 
 //Creating OLED display instances
 #include <Wire.h>    // Only needed for Arduino 1.6.5 and earlier
-#include "SSD1306.h" // alias for `#include "SSD1306Wire.h"`
+#include "SSD1306Wire.h" // alias for `#include "SSD1306Wire.h"`
 #include "OLEDDisplayUi.h"
-SSD1306  display(0x3c, LCD_SDA, LCD_SCK);
+SSD1306Wire  display(0x3c, SDA, SCL);
 OLEDDisplayUi ui(&display);
 
 //Component variables
@@ -69,12 +72,7 @@ float elapsed_time = -1;
 bool _is_arming = false;
 bool _is_launching = false;
 
-//Input
-#define PIN_BTN_VCC_1 BTN_L2
-#define PIN_BTN_VCC_2 BTN_L1
-#define PIN_BTN_IN_1  BTN_R1
-#define PIN_BTN_IN_2  BTN_R2
-#define PIN_JACK      JACK
+
 
 bool _prev_up_state    = false;
 bool _prev_down_state  = false;
@@ -89,30 +87,32 @@ bool right_pressed = false;
 bool jack_pulled   = false;
 
 void check_input() {
-    digitalWrite(PIN_BTN_VCC_1, HIGH);
-    digitalWrite(PIN_BTN_VCC_2, LOW);
-    delay(2);
-    up_pressed = digitalRead(PIN_BTN_IN_1) && !_prev_up_state;
-    _prev_up_state = digitalRead(PIN_BTN_IN_1);
-    down_pressed = digitalRead(PIN_BTN_IN_2) && !_prev_down_state;
-    _prev_down_state = digitalRead(PIN_BTN_IN_2);
 
-//    if (digitalRead(PIN_JACK) == 0) {
+    up_pressed = digitalRead(BTN_R1) && !_prev_up_state;
+    down_pressed = digitalRead(BTN_R2) && !_prev_down_state;
+    left_pressed = digitalRead(BTN_L1) && !_prev_left_state;
+    right_pressed = digitalRead(BTN_L2) && !_prev_right_state;
+    
+    _prev_up_state = digitalRead(BTN_R1);
+    _prev_down_state = digitalRead(BTN_R2);
+    _prev_left_state = digitalRead(BTN_L1); 
+    _prev_right_state = digitalRead(BTN_L2);
+
+
+//    if (digitalRead(JACK) == 0) {
 //        nh.loginfo("bas");
-//    } else if (digitalRead(PIN_JACK) == 1) {
+//    } else if (digitalRead(JACK) == 1) {
 //        nh.loginfo("haut");
 //    }
+    
+    
 
-    jack_pulled = digitalRead(PIN_JACK) && !_prev_jack_state; // 1 when inserted
-    _prev_jack_state = digitalRead(PIN_JACK);
+    jack_pulled = !digitalRead(JACK) ; // 1 when inserted
+    _prev_jack_state = digitalRead(JACK);
   
-    digitalWrite(PIN_BTN_VCC_1, LOW);
-    digitalWrite(PIN_BTN_VCC_2, HIGH);
-    delay(2);
-    left_pressed = digitalRead(PIN_BTN_IN_1) && !_prev_left_state;
-    _prev_left_state = digitalRead(PIN_BTN_IN_1);
-    right_pressed = digitalRead(PIN_BTN_IN_2) && !_prev_right_state;
-    _prev_right_state = digitalRead(PIN_BTN_IN_2);
+    
+    
+    delay(100);
 }
 
 //LEDs
@@ -124,7 +124,7 @@ void update_leds() {
 
     if(init_status != -1) {
         if(init_status == 0) // some nodes have not responded yet
-            analogWrite(PIN_LED_INIT, 127 * (1 + cos(float(millis()) / 200.0))); // wave
+            analogWrite(PIN_LED_INIT, 127 * (1 + cos(float(2*PI*millis()) / 1000.0))); // wave
         else if(init_status == 1) // init finished and all nodes are ready
             analogWrite(PIN_LED_INIT, 255); //solid ON
         else if(init_status == 2) // init finished but at least one node failed
@@ -135,21 +135,21 @@ void update_leds() {
 
 
 //ROS methods
-void on_set_strategies(const drivers_ard_hmi::SetStrategies& msg){
+void on_set_strategies(const ard_hmi::SetStrategies& msg){
   strats_count = msg.strategies_names_length;
   for(int i=0; i < msg.strategies_names_length; i++) {
     strats[i] = msg.strategies_names[i];
   }
 }
 
-void on_set_teams(const drivers_ard_hmi::SetTeams& msg){
+void on_set_teams(const ard_hmi::SetTeams& msg){
   teams_count = msg.teams_names_length;
   for(int i=0; i < msg.teams_names_length; i++) {
     teams[i] = msg.teams_names[i];
   }
 }
 
-void on_game_status(const ai_game_manager::GameStatus& msg){
+void on_game_status(const game_manager::GameStatus& msg){
     game_status = msg.game_status;
     init_status = msg.init_status;
 
@@ -157,31 +157,33 @@ void on_game_status(const ai_game_manager::GameStatus& msg){
         ui.switchToFrame(5);
 }
 
-void on_game_timer(const ai_game_manager::GameTime& msg){
+void on_game_timer(const game_manager::GameTime& msg){
     if(msg.is_active) {
         game_duration = msg.game_time_duration;
         elapsed_time = msg.game_elapsed_time;
     }
 }
 
-void on_score(const ai_scheduler::AIScore& msg){
+void on_score(const scheduler::AIScore& msg){
     current_score = msg.score;
 }
 
-void on_ros_event(const drivers_ard_hmi::ROSEvent& msg){
+void on_ros_event(const ard_hmi::ROSEvent& msg){
     if(msg.event == 0) //asked to respond for JACK
         ui.switchToFrame(4);
 }
 
-ros::Subscriber<drivers_ard_hmi::SetStrategies> sub_strats     ("feedback/ard_hmi/set_strategies", &on_set_strategies);
-ros::Subscriber<drivers_ard_hmi::SetTeams>      sub_teams      ("feedback/ard_hmi/set_teams", &on_set_teams);
-ros::Subscriber<drivers_ard_hmi::ROSEvent>      sub_ros_events ("feedback/ard_hmi/ros_event", &on_ros_event);
-ros::Subscriber<ai_game_manager::GameStatus>    sub_game_status("ai/game_manager/status",     &on_game_status);
-ros::Subscriber<ai_game_manager::GameTime>             sub_game_timer ("ai/game_manager/time",       &on_game_timer);
-ros::Subscriber<ai_scheduler::AIScore>          sub_score      ("ai/scheduler/score",         &on_score);
+ros::Subscriber<ard_hmi::SetStrategies> sub_strats     ("feedback/ard_hmi/set_strategies", &on_set_strategies);
+ros::Subscriber<ard_hmi::SetTeams>      sub_teams      ("feedback/ard_hmi/set_teams", &on_set_teams);
+ros::Subscriber<ard_hmi::ROSEvent>      sub_ros_events ("feedback/ard_hmi/ros_event", &on_ros_event);
+ros::Subscriber<game_manager::GameStatus>    sub_game_status("ai/game_manager/status",     &on_game_status);
+ros::Subscriber<game_manager::GameTime>             sub_game_timer ("ai/game_manager/time",       &on_game_timer);
+ros::Subscriber<scheduler::AIScore>          sub_score      ("ai/scheduler/score",         &on_score);
 
-drivers_ard_hmi::HMIEvent hmi_event_msg;
+ard_hmi::HMIEvent hmi_event_msg;
+std_msgs::String hmi_chatter_msg;
 ros::Publisher hmi_event_pub("feedback/ard_hmi/hmi_event", &hmi_event_msg);
+ros::Publisher hmi_chatter_pub("feedback/ard_hmi/chatter", &hmi_chatter_msg);
 
 
 
@@ -236,7 +238,7 @@ void drawMCQComponent(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x
 //Frames rendering methods
 void drawHelloFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
     current_frame = 0;
-    drawFrameTitleComponent(display, state, x, y, "RPi init...");
+    drawFrameTitleComponent(display, state, x, y, "LattePanda init...");
     if(init_status == -1) drawBigCentralMessageComponent(display, state, x, y, "WAIT");
     else drawBigCentralMessageComponent(display, state, x, y, "READY");
 
@@ -293,10 +295,11 @@ void drawStrategyFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t 
 }
 
 void drawArmFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, int16_t y) {
+    delay(1);
     current_frame = 3;
     drawFrameTitleComponent(display, state, x, y, "Calibration");
-    if(!_is_arming) drawBigCentralMessageComponent(display, state, x, y, "ARM?");
-    else drawBigCentralMessageComponent(display, state, x, y, "ARMING...");
+      if(!_is_arming) {drawBigCentralMessageComponent(display, state, x, y, "ARM?");}
+      else {drawBigCentralMessageComponent(display, state, x, y, "ARMING...");}
 
     if(left_pressed) {
         _is_arming = false; //todo good ?
@@ -304,10 +307,12 @@ void drawArmFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, in
     }
     if(right_pressed) {
         if(!_is_arming) {
-            hmi_event_msg.event = hmi_event_msg.EVENT_START; // Will start ai/scheduler with selected config.
+            hmi_event_msg.event = hmi_event_msg.EVENT_START; // Will start ai/scheduler with selected config.k
             hmi_event_msg.chosen_team_id = chosen_team;
             hmi_event_msg.chosen_strategy_id = chosen_strat;
             hmi_event_pub.publish(&hmi_event_msg); // send config.
+            
+            ui.nextFrame();
             _is_arming = true;
         }
     }
@@ -317,8 +322,8 @@ void drawJackFrame(OLEDDisplay *display, OLEDDisplayUiState* state, int16_t x, i
     current_frame = 4;
     drawFrameTitleComponent(display, state, x, y, "Jack");
     if(!_is_launching) {
-        if(_prev_jack_state) drawBigCentralMessageComponent(display, state, x, y, "JACK?");
-        else drawSmallCentralMessageComponent(display, state, x, y, "Insert jack.");
+        if(_prev_jack_state and !jack_pulled) {drawBigCentralMessageComponent(display, state, x, y, "JACK?");}
+        else {drawSmallCentralMessageComponent(display, state, x, y, "Insert jack.");}
     }
     else drawBigCentralMessageComponent(display, state, x, y, "JACKED!");
 
@@ -360,11 +365,11 @@ FrameCallback frames[] = {drawHelloFrame, drawTeamFrame, drawStrategyFrame, draw
 int frameCount = 6;
 
 void setup() {
-    pinMode(PIN_BTN_VCC_1, OUTPUT); // init input buttons
-    pinMode(PIN_BTN_VCC_2, OUTPUT);
-    pinMode(PIN_BTN_IN_1,  INPUT);
-    pinMode(PIN_BTN_IN_2,  INPUT);
-    pinMode(PIN_JACK,      INPUT);
+    pinMode(BTN_L2, INPUT); // init input buttons
+    pinMode(BTN_L1, INPUT);
+    pinMode(BTN_R1,  INPUT);
+    pinMode(BTN_R2,  INPUT);
+    pinMode(JACK,    INPUT);
 
     pinMode(PIN_LED_ALIVE, OUTPUT);
     pinMode(PIN_LED_INIT, OUTPUT);
@@ -377,8 +382,9 @@ void setup() {
     nh.subscribe(sub_score);
     nh.subscribe(sub_ros_events);
     nh.advertise(hmi_event_pub);
-    
-    ui.setTargetFPS(30);
+    nh.advertise(hmi_chatter_pub);
+        
+    ui.setTargetFPS(10);
     
     ui.setActiveSymbol(activeSymbol);
     ui.setInactiveSymbol(inactiveSymbol);
@@ -393,15 +399,23 @@ void setup() {
 
 
 void loop() {
-    check_input();
-    update_leds();
-    ui.update();
+  hmi_chatter_msg.data = "Hello";
+   hmi_chatter_pub.publish(&hmi_chatter_msg);
 
-    if(game_status == -1) {
-        hmi_event_msg.event = hmi_event_msg.EVENT_HMI_INITIALIZED; // tell ros that hmi is alive until it responds back
-        hmi_event_pub.publish(&hmi_event_msg);
-    }
+  //int remainingTimeBudget = 
+  ui.update();
 
-    nh.spinOnce();
-    delay(30); // Needed for input to work properly, no idea why...
+  //if (remainingTimeBudget > 0) {
+    // You can do some work here
+    // Don't do stuff if you are below your
+    // time budget.
+      check_input();
+      update_leds();
+        if(game_status == -1) {
+          hmi_event_msg.event = hmi_event_msg.EVENT_HMI_INITIALIZED; // tell ros that hmi is alive until it responds back
+          hmi_event_pub.publish(&hmi_event_msg);
+              }
+     //delay(remainingTimeBudget);
+  //}
+        nh.spinOnce();
 }
