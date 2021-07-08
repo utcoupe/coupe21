@@ -3,10 +3,10 @@
     <!--waypoint name="way_tower_approach"    x="0.5"   y="1.6"/-->
 
     <!-- PR waypoints -->
-    <!--waypoint name="way_spawn_pr"          x="0.225" y="1.55"  a="1.57079632679"/-->
+    <!-- waypoint name="way_spawn_pr"          x="0.225" y="1.55"  a="1.57079632679"/ -->
     
 
     <!-- GR waypoints -->
-    <!--waypoint name="way_spawn_gr"          x="0.225" y="1.25"  a="-1.57079632679"/-->
+    <waypoint name="way_spawn_gr"          x="0.225" y="1.25"  a="-1.57079632679"/>
 
 </waypoints>
