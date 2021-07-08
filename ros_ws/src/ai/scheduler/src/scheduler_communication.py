@@ -15,6 +15,9 @@ import ard_asserv.srv
 import ard_asserv.msg
 import driver_ax12.msg
 
+#coupe21-specific
+import stm32_actuators.msg
+
 #coupe19-specific
 # import ard_tower.msg
 # import ard_gr_front.msg
@@ -51,7 +54,10 @@ class RequestTypes(object):
             "/drivers/ax12":                   (RequestTypes.ACTION, driver_ax12.msg.Ax12CommandAction, driver_ax12.msg.Ax12CommandGoal),
 
             "/feedback/ard_hmi/ros_event": (RequestTypes.PUB_MSG, ard_hmi.msg.ROSEvent),
-            "/feedback/ard_hmi/hmi_event": (RequestTypes.SUB_MSG, ard_hmi.msg.HMIEvent)}
+            "/feedback/ard_hmi/hmi_event": (RequestTypes.SUB_MSG, ard_hmi.msg.HMIEvent),
+            
+            "/gobeur":                 (RequestTypes.PUB_MSG, stm32_actuators.msg.Gobeur_msg)
+            }
 
     @staticmethod
     def getRequestType(dest):
