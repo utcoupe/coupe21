@@ -96,7 +96,7 @@ class BeltInterpreter(object):
                 if (len(self._previous_statuses) > self.PREVIOUS_DATA_SIZE):
                     self._previous_statuses.pop(0)
 
-                rospy.logwarn(self._current_rects.values())
+                # rospy.logwarn(self._current_rects.values())
                 self._pub.publish(self._current_rects.values())
                 self._current_rects.clear()
                 self._current_statuses.clear()
@@ -148,7 +148,7 @@ class BeltInterpreter(object):
 
             rect.header.stamp = rospy.Time.now()
             rect.layer = self._belt_parser.Sensors[data.sensor_id]["layer"]
-            rect.x = self.get_rect_x(data.range, params)
+            rect.x = -self.get_rect_x(data.range, params)
             rect.y = 0
             rect.w = width
             rect.h = height
