@@ -193,4 +193,60 @@
 			<!-- TODO move actuators : unload weight atoms -->
 		</actions>
 	</action>
+
+	<action ref="load_gobeur_left">
+		<params></params>
+		<actions exec="all" order="linear">
+			<orderref ref="gobeur_left_suck" name="suck le gob left" />
+			<orderref ref="delay">
+				<duration>2</duration>
+			</orderref>
+		</actions>
+	</action>
+
+	<!-- <action ref="release_gobeur_left">
+		<params></params>
+		<actions exec="all" order="linear">
+			<orderref ref="gobeur_left_release" name="release le gob left" />
+			<orderref ref="delay">
+				<duration>2</duration>
+			</orderref>
+		</actions>
+	</action> -->
+
+	<action ref="ramasse_gob_spawn" name="Gob spawn">
+		<params></params>
+		<actions exec="all" order="linear">
+			<orderref ref="navigator_goto_waypoint" name="go back">
+				<waypoint_name>sortie_spawn</waypoint_name>
+				<disable_pathfinder>1</disable_pathfinder>
+				<mode>1</mode>
+				<direction>0</direction>
+			</orderref>
+			<orderref ref="navigator_goto_waypoint" name="go back">
+				<waypoint_name>en_face_gob_spawn</waypoint_name>
+				<disable_pathfinder>1</disable_pathfinder>
+				<mode>1</mode>
+				<direction>0</direction>
+			</orderref>
+			<orderref ref="navigator_goto_waypoint" name="go back">
+				<waypoint_name>apres_gob_spawn</waypoint_name>
+				<disable_pathfinder>1</disable_pathfinder>
+				<mode>1</mode>
+				<direction>0</direction>
+			</orderref>
+			<orderref ref="navigator_goto_waypoint" name="go back">
+				<waypoint_name>gob_dans_spawn</waypoint_name>
+				<disable_pathfinder>1</disable_pathfinder>
+				<mode>1</mode>
+				<direction>0</direction>
+			</orderref>
+			<orderref ref="navigator_goto_waypoint" name="go back">
+				<waypoint_name>nord_end</waypoint_name>
+				<disable_pathfinder>1</disable_pathfinder>
+				<mode>1</mode>
+				<direction>1</direction>
+			</orderref>
+		</actions>
+	</action>
 </actions>

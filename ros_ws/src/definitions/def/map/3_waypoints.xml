@@ -7,6 +7,16 @@
     
 
     <!-- GR waypoints -->
-    <waypoint name="way_spawn_gr"          x="0.225" y="1.25"  a="-1.57079632679"/>
+    <waypoint name="way_spawn_gr"          x="0.2" y="1.2"  a="0.0"/>
+
+    <waypoint name="sortie_spawn"   x="0.670" y="1.2"   a="0.0"/>
+
+    <waypoint name="en_face_gob_spawn"          x="0.670" y="1.5925"  a="3.14159265359"/>
+
+    <waypoint name="apres_gob_spawn"          x="0.2" y="1.5925"  a="-1.57079632679"/>
+
+    <waypoint name="gob_dans_spawn"          x="0.2" y="1.2"  a="-1.57079632679"/>
+
+    <waypoint name="nord_end"          x="0.2" y="1.750"  a="-1.57079632679"/> <!-- En marche arriere-->
 
 </waypoints>

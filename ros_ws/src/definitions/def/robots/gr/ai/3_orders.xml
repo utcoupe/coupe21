@@ -23,4 +23,11 @@
 			<param name="success" type="bool" condition="==">1</param>
 		</response>
 	</order>
+
+	<order ref="gobeur_left_suck" duration="3">
+		<message dest="/gobeur" timeout="8">
+			<param name="index_gobeur" type="int">0</param>
+			<param name="index_order" type="int">0</param>
+		</message>
+	</order>
 </orders>

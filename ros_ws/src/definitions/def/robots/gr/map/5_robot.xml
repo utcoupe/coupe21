@@ -1,6 +1,6 @@
 <robot>
-    <shape type="rect" w="0.35" h="0.25"/>
-    <wheelbase L="0.31"/>
+    <shape type="rect" w="0.285" h="0.230"/>
+    <wheelbase L="0.272"/>
     <color name="purple"/>
     
     <!-- Objects can inherit from classes defined in 4_objects.xml -->
