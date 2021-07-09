@@ -27,7 +27,7 @@
     <sensor id="sensor_tera1" type="teraranger" layer="belt"> <!-- x, y in meters, a in rad -->
       <x>0</x>
       <y>0</y>
-      <a>0</a>
+      <a>3.1415</a>
     </sensor>
   </sensors>
 </belt>
